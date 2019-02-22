@@ -14,5 +14,6 @@
 # Idea
 .idea/workspace.xml
 
-# Go
+# Build
 go.sum
+clue-api
