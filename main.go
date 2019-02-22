@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/gorilla/mux"
+	"time"
 )
 
 func main() {
@@ -21,3 +22,11 @@ func GetPlayers(w http.ResponseWriter, r *http.Request) {}
 func GetPlayer(w http.ResponseWriter, r *http.Request) {}
 func CreatePlayer(w http.ResponseWriter, r *http.Request) {}
 func DeletePlayer(w http.ResponseWriter, r *http.Request) {}
+
+type Player struct {
+	id string `json:"id,omitempty"`
+	human bool `json:"human,omitempty"`
+	name string `json:"name,omitempty"`
+	dateCreated time.Time `json:"dateCreated,omitempty"`
+	dateModified time.Time `json:"dateModified,omitempty"`
+}
