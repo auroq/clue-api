@@ -23,6 +23,8 @@ func main() {
 	router.HandleFunc("/people/{id}", GetPlayer).Methods("GET")
 	router.HandleFunc("/people/{id}", CreatePlayer).Methods("POST")
 	router.HandleFunc("/people/{id}", DeletePlayer).Methods("DELETE")
+
+	connectToMongoDB()
 	fmt.Println("Starting on port 8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

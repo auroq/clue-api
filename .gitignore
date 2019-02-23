@@ -8,7 +8,7 @@
 # Test binary, build with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
+# Output of the go coverage tool, specibles for your rufically when used with LiteIDE
 *.out
 
 # Idea
@@ -17,3 +17,6 @@
 # Build
 go.sum
 clue-api
+
+# Local
+.env
