@@ -1,9 +1,14 @@
-package data
+package models
 
 import (
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"time"
 )
+
+type GameInfo struct {
+	Name string `json:"name"`
+	PlayerNames []string `json:"player_names"`
+}
 
 type Player struct {
 	ID primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`

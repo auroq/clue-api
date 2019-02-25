@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/json"
 	"github.com/auroq/clue-api/pkg/data"
+	"github.com/auroq/clue-api/pkg/models"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -13,10 +14,7 @@ func Endpoints(router *mux.Router) {
 }
 
 func CreateGame(w http.ResponseWriter, r *http.Request) {
-	var gameInfo struct {
-		Name string `json:"name"`
-		PlayerNames []string `json:"player_names"`
-	}
+	var gameInfo models.GameInfo
 	err := json.NewDecoder(r.Body).Decode(&gameInfo)
 	game, err := data.CreateGame(gameInfo.Name, gameInfo.PlayerNames)
 	if err != nil {

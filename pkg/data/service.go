@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"github.com/auroq/clue-api/pkg/models"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"time"
 )
@@ -16,8 +17,8 @@ func getClient() dataStore {
 	return client
 }
 
-func addPlayer(name string, human bool) (player Player, err error) {
-	player = Player {
+func addPlayer(name string, human bool) (player models.Player, err error) {
+	player = models.Player {
 		Name: name,
 		Human: human,
 		DateCreated: time.Now(),
@@ -27,7 +28,7 @@ func addPlayer(name string, human bool) (player Player, err error) {
 	return player, err
 }
 
-func CreateGame(name string, playerNames []string) (game Game, err error) {
+func CreateGame(name string, playerNames []string) (game models.Game, err error) {
 	game.Name = name
 	for _, playerName := range playerNames {
 		player, err := addPlayer(playerName, true)
@@ -41,14 +42,14 @@ func CreateGame(name string, playerNames []string) (game Game, err error) {
 	return game, err
 }
 
-func GetAllGames() (games []*Game, err error) {
+func GetAllGames() (games []*models.Game, err error) {
 	cur, err := getClient().find("clue-api", "games", bson.D{})
 	if err != nil {
 		return nil, err
 	}
 
 	for cur.Next(context.TODO()) {
-		var game Game
+		var game models.Game
 		err := cur.Decode(&game)
 		if err != nil {
 			return nil, err
