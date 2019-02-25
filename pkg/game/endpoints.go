@@ -1,21 +1,15 @@
-package main
+package game
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/auroq/clue-api/data"
+	"github.com/auroq/clue-api/pkg/data"
 	"github.com/gorilla/mux"
-	"log"
 	"net/http"
 )
 
-func main() {
-	router := mux.NewRouter()
+func Endpoints(router *mux.Router) {
 	router.HandleFunc("/games", GetAllGames).Methods("GET", "OPTIONS")
 	router.HandleFunc("/games", CreateGame).Methods("POST", "OPTIONS")
-
-	fmt.Println("Starting on port 8000")
-	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
 func CreateGame(w http.ResponseWriter, r *http.Request) {

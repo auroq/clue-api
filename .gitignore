@@ -17,7 +17,7 @@
 
 # Build
 go.sum
-clue-api
+build/
 
 # Local
 .env
