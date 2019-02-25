@@ -1,4 +1,4 @@
-package main
+package data
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 type dataStore interface {
-	insert(db string, collectionName string, player Player) (Player, error)
+	insert(db string, collectionName string, obj interface{}) (interface{}, error)
 	disconnect() error
 }
 
@@ -17,12 +17,10 @@ type mongoDataStore struct {
 	client *mongo.Client
 }
 
-func (store mongoDataStore) insert(db string, collectionName string, player Player) (Player, error) {
+func (store mongoDataStore) insert(db string, collectionName string, obj interface{}) (interface{}, error) {
 	client := store.client
 	collection := client.Database(db).Collection(collectionName)
-	id, err := collection.InsertOne(context.TODO(), &player)
-	player.ID = id
-	return player, err
+	return collection.InsertOne(context.TODO(), &obj)
 }
 
 func (store mongoDataStore) disconnect() error {
