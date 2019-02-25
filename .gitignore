@@ -13,6 +13,7 @@
 
 # Idea
 .idea/workspace.xml
+.idea/mongoSettings.xml
 
 # Build
 go.sum

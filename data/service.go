@@ -1,6 +1,10 @@
 package data
 
-import "time"
+import (
+	"context"
+	"github.com/mongodb/mongo-go-driver/bson"
+	"time"
+)
 
 var client dataStore
 
@@ -30,9 +34,31 @@ func CreateGame(name string, playerNames []string) (game Game, err error) {
 		if err != nil {
 			return game, err
 		}
-		game.Players = append(game.Players, player)
+		game.Players = append(game.Players, player.ID)
 	}
 
 	game.ID, err = getClient().insert("clue-api", "games", game)
 	return game, err
+}
+
+func GetAllGames() (games []*Game, err error) {
+	cur, err := getClient().find("clue-api", "games", bson.D{})
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(context.TODO()) {
+		var game Game
+		err := cur.Decode(&game)
+		if err != nil {
+			return nil, err
+		}
+		games = append(games, &game)
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	_ = cur.Close(context.TODO())
+
+	return games, nil
 }
