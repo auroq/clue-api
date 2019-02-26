@@ -57,10 +57,8 @@ func (controller Controller) CreateGame(w http.ResponseWriter, r *http.Request) 
 func (controller Controller) GetAllGames(w http.ResponseWriter, r *http.Request) {
 	games, err := controller.gameService.GetAllGames()
 	if err != nil {
-		w.WriteHeader(500)
-		_ = json.NewEncoder(w).Encode(err)
+		respond(w, http.StatusInternalServerError, err)
 		return
 	}
-	w.WriteHeader(201)
-	_ = json.NewEncoder(w).Encode(games)
+	respond(w, http.StatusOK, games)
 }

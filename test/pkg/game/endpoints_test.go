@@ -61,3 +61,36 @@ func TestCreateGameReturns(t *testing.T) {
 		})
 	}
 }
+
+func getAllGames() (*httptest.ResponseRecorder, error) {
+	req, err := http.NewRequest("GET", "/games", nil)
+	if err != nil {
+		return nil, err
+	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(gameController.GetAllGames)
+	handler.ServeHTTP(rr, req)
+	return rr, nil
+}
+
+var getAllGamesStatusTests = []struct {
+	name   string
+	games  []models.Game
+	status int
+}{
+	{"EmptyList", []models.Game{}, 201},
+}
+
+func TestGetAllGamesReturns(t *testing.T) {
+	for _, tt := range getAllGamesStatusTests {
+		t.Run(tt.name, func(t *testing.T) {
+			rr, err := getAllGames()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if code := rr.Code; code != tt.status {
+				t.Errorf("create returned wrong status code: actual %v expected %v", code, tt.status)
+			}
+		})
+	}
+}
