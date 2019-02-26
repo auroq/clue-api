@@ -16,3 +16,10 @@ func (client MockMongoDataStore) Insert(db string, collectionName string, obj in
 func (client MockMongoDataStore) Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error) {
 	return nil, errors.UnsupportedError("function is not yet implemented")
 }
+
+func (client MockMongoDataStore) InsertMany(db string, collectionName string, obj ...interface{}) (ids []primitive.ObjectID, err error) {
+	for range obj{
+		ids = append(ids, primitive.NewObjectID())
+	}
+	return ids, nil
+}

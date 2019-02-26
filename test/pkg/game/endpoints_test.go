@@ -42,7 +42,7 @@ var createGameStatusTests = []struct {
 	body interface{}
 	status int
 }{
-	{"created", models.GameInfo{Name:"Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
+	{"Created", models.GameInfo{Name:"Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
 	{"EmptyPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: []string{}}, 400},
 	{"NilPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: nil}, 400},
 	{"EmptyName", models.GameInfo{Name: "", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 400},

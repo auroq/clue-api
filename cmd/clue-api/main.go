@@ -14,6 +14,9 @@ import (
 func BuildContainer() *dig.Container {
 	container := dig.New()
 	container.Provide(data.NewConfiguration)
+	container.Provide(func(config *data.Config) (data.DataStore, error) {
+		return data.NewDbConnection(config)
+	})
 	container.Provide(data.NewDbConnection)
 	container.Provide(game.NewGameService)
 	container.Provide(player.NewPlayerService)

@@ -15,7 +15,7 @@
     </EXTENSION>
     <framework value="gotest" />
     <kind value="DIRECTORY" />
-    <package value="github.com/auroq/clue-api" />
+    <package value="github.com/auroq/clue-api/" />
     <directory value="$PROJECT_DIR$/" />
     <filePath value="$PROJECT_DIR$/" />
     <method v="2" />

@@ -11,6 +11,7 @@ import (
 
 type DataStore interface {
 	Insert(db string, collectionName string, obj interface{}) (id primitive.ObjectID, err error)
+	InsertMany(db string, collectionName string, obj ...interface{}) (ids []primitive.ObjectID, err error)
 	Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error)
 }
 
@@ -34,6 +35,17 @@ func (client MongoDataStore) Insert(db string, collectionName string, obj interf
 		return id, nil
 	}
 	return id, errors.New("unable to get object ID from inserted item")
+}
+
+func (client MongoDataStore) InsertMany(db string, collectionName string, obj ...interface{}) (ids []primitive.ObjectID, err error) {
+	collection := client.Database(db).Collection(collectionName)
+	results, err := collection.InsertMany(context.TODO(), obj)
+	for _, result := range results.InsertedIDs {
+		if id, ok := result.(primitive.ObjectID); ok {
+			ids = append(ids, id)
+		}
+	}
+	return
 }
 
 func (client MongoDataStore) Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error) {

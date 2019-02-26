@@ -33,21 +33,17 @@ func respond(w http.ResponseWriter, statusCode int, response interface{}) {
 func (controller Controller) CreateGame(w http.ResponseWriter, r *http.Request) {
 	var gameInfo models.GameInfo
 	err := json.NewDecoder(r.Body).Decode(&gameInfo)
-	var players []models.Player
 
 	if len(gameInfo.PlayerNames) <= 0 || len(gameInfo.Name) <= 0 {
 		respond(w, http.StatusBadRequest, "Invalid request")
 		return
 	}
 
-	for _, playerName := range gameInfo.PlayerNames {
-		p, err := controller.playerService.AddPlayer(playerName, true)
+	players, err := controller.playerService.AddPlayers(gameInfo.PlayerNames...)
 		if err != nil {
 			respond(w, http.StatusInternalServerError, err)
 			return
 		}
-		players = append(players, p)
-	}
 
 	game, err := controller.gameService.CreateGame(gameInfo.Name, players)
 	if err != nil {
