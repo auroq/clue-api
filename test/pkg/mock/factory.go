@@ -20,7 +20,13 @@ func GetGame(name string, playerNum int) models.Game {
 	}
 }
 
-func GetPlayer(name string) models.Player {
+func GetNonHumanPlayer(name string) models.Player {
+	player := GetHumanPlayer(name)
+	player.Human = false;
+	return player
+}
+
+func GetHumanPlayer(name string) models.Player {
 	return models.Player{
 		primitive.NewObjectID(),
 		name,

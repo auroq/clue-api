@@ -18,6 +18,11 @@ type Player struct {
 	DateModified time.Time          `json:"dateModified,omitempty"`
 }
 
+func (player Player) Equivalent(other Player) bool {
+	return player.Name == other.Name &&
+		player.Human == other.Human
+}
+
 type Game struct {
 	ID           primitive.ObjectID   `bson:"_id,omitempty" json:"id,omitempty"`
 	Name         string               `json:"name"`

@@ -4,6 +4,7 @@ import (
 	"github.com/auroq/clue-api/pkg/data"
 	"github.com/auroq/clue-api/pkg/models"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"golang.org/x/crypto/openpgp/errors"
 	"time"
 )
 
@@ -16,6 +17,9 @@ func NewPlayerService(dataStore data.DataStore) Service {
 }
 
 func (service Service) AddPlayer(name string, human bool) (player models.Player, err error) {
+	if len(name) <= 0 {
+		return player, errors.InvalidArgumentError("player name cannot be empty")
+	}
 	player = models.Player{
 		ID:           primitive.NewObjectID(),
 		Name:         name,

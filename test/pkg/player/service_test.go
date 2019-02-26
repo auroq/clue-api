@@ -1,13 +1,18 @@
-package game
+package player
 
 import (
 	"github.com/auroq/clue-api/pkg/game"
 	"github.com/auroq/clue-api/pkg/models"
 	"github.com/auroq/clue-api/pkg/player"
 	"github.com/auroq/clue-api/test/pkg/mock"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"golang.org/x/crypto/openpgp/errors"
 	"testing"
 )
+
+var dataStore mock.MockMongoDataStore
+var gameService game.Service
+var playerService player.Service
+var gameController game.Controller
 
 func init() {
 	dataStore = mock.MockMongoDataStore{}
@@ -16,46 +21,46 @@ func init() {
 	gameController = game.NewGameController(gameService, playerService)
 }
 
-var createGameTests = []struct {
-	name    string
-	players []models.Player
+var addPlayerTests = []struct {
+	name   string
+	player models.Player
+	err    error
 }{
 	{
-		"OnePlayer",
-		[]models.Player{mock.GetHumanPlayer("Player1")},
+		"Human",
+		mock.GetHumanPlayer("Player1"),
+		nil,
 	},
 	{
-		"TwoPlayers",
-		[]models.Player{mock.GetHumanPlayer("Player2"), mock.GetHumanPlayer("Player3")},
+		"HumanEmptyName",
+		mock.GetHumanPlayer(""),
+		errors.InvalidArgumentError("player name cannot be empty"),
 	},
 	{
-		"ThreePlayers",
-		[]models.Player{mock.GetHumanPlayer("Player1"), mock.GetHumanPlayer("Player2"), mock.GetHumanPlayer("Player3")},
+		"NonHuman",
+		mock.GetNonHumanPlayer("Player1"),
+		nil,
+	},
+	{
+		"NonHumanEmptyName",
+		mock.GetNonHumanPlayer(""),
+		errors.InvalidArgumentError("player name cannot be empty"),
 	},
 }
 
-func TestCreateGame(t *testing.T) {
-	for _, tt := range createGameTests {
+func TestAddPlayer(t *testing.T) {
+	for _, tt := range addPlayerTests {
 		t.Run(tt.name, func(t *testing.T) {
-			game, err := gameService.CreateGame(tt.name, tt.players)
+			expected := tt.player
+			actual, err := playerService.AddPlayer(expected.Name, expected.Human)
 			if err != nil {
+				if err == tt.err {
+					return
+				}
 				t.Fatal(err)
 			}
-			if game.Name != tt.name {
-				t.Errorf("create returned wrong name: actual %v expected %v", game.Name, tt.name)
-			}
-			var blankObjectID primitive.ObjectID
-			for i, playerId := range game.Players {
-				if playerId == blankObjectID {
-					t.Fatal("object id was empty")
-				}
-				for j, altPlayerId := range game.Players {
-					if i == j {
-						continue
-					} else if playerId == altPlayerId {
-						t.Fatal("duplicate object ids found")
-					}
-				}
+			if !actual.Equivalent(expected) {
+				t.Fatal("actual player is not equivalent to expected")
 			}
 		})
 	}
