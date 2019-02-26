@@ -5,7 +5,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 )
 
-type MockMongoDataStore struct{
+type MockMongoDataStore struct {
 	FindValue []interface{}
 }
 

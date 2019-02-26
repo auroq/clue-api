@@ -19,12 +19,12 @@ var gameController game.Controller
 
 func init() {
 	dataStore = mock.MockMongoDataStore{}
-	gameService = game.NewGameService(dataStore)
-	playerService = player.NewPlayerService(dataStore)
+	gameService = game.NewGameService(&dataStore)
+	playerService = player.NewPlayerService(&dataStore)
 	gameController = game.NewGameController(gameService, playerService)
 }
 
-func createGame(body interface{}) (*httptest.ResponseRecorder, error) {
+func createGamePost(body interface{}) (*httptest.ResponseRecorder, error) {
 	jsonValue, _ := json.Marshal(body)
 	req, err := http.NewRequest("POST", "/games", bytes.NewBuffer(jsonValue))
 	if err != nil {
@@ -63,10 +63,10 @@ var createGameStatusTests = []struct {
 	},
 }
 
-func TestCreateGameReturns(t *testing.T) {
+func TestCreateGameEndpointReturns(t *testing.T) {
 	for _, tt := range createGameStatusTests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr, err := createGame(tt.body)
+			rr, err := createGamePost(tt.body)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -77,7 +77,7 @@ func TestCreateGameReturns(t *testing.T) {
 	}
 }
 
-func getAllGames() (*httptest.ResponseRecorder, error) {
+func getAllGamesGet() (*httptest.ResponseRecorder, error) {
 	req, err := http.NewRequest("GET", "/games", nil)
 	if err != nil {
 		return nil, err
@@ -93,10 +93,12 @@ var getAllGamesStatusTests = []struct {
 	games  []models.Game
 	status int
 }{
-	{"EmptyList", []models.Game{}, http.StatusOK},
+	{"OkEmptyList", []models.Game{}, http.StatusOK},
+	{"OkSingleItem", []models.Game{mock.GetGame("Game1", 2)}, http.StatusOK},
+	{"OkMultipleGames", []models.Game{mock.GetGame("Game1", 2), mock.GetGame("Game2", 4)}, http.StatusOK},
 }
 
-func TestGetAllGamesReturns(t *testing.T) {
+func TestGetAllGamesEndpointReturns(t *testing.T) {
 	for _, tt := range getAllGamesStatusTests {
 		t.Run(tt.name, func(t *testing.T) {
 			var genericGames []interface{}
@@ -104,7 +106,7 @@ func TestGetAllGamesReturns(t *testing.T) {
 				genericGames = append(genericGames, game)
 			}
 			dataStore.FindValue = genericGames
-			rr, err := getAllGames()
+			rr, err := getAllGamesGet()
 			if err != nil {
 				t.Fatal(err)
 			}
