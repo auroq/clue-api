@@ -13,14 +13,12 @@ import (
 	"testing"
 )
 
-var config *data.Config
 var dataStore data.DataStore
 var gameService game.Service
 var playerService player.Service
 var gameController game.Controller
 
 func init() {
-	config = data.NewConfiguration()
 	dataStore = mock.MockMongoDataStore{}
 	gameService = game.NewGameService(dataStore)
 	playerService = player.NewPlayerService(dataStore)
@@ -39,13 +37,26 @@ func createGame(body interface{}) (*httptest.ResponseRecorder, error) {
 	return rr, nil
 }
 
-func TestCreateGameReturns201(t *testing.T) {
-	expected := models.GameInfo{Name:"Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}
-	rr, err := createGame(expected)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if status := rr.Code; status != http.StatusCreated {
-		t.Errorf("create returned wrong status code: actual %v expected %v", status, http.StatusCreated)
+var createGameStatusTests = []struct {
+	name string
+	body interface{}
+	status int
+}{
+	{"created", models.GameInfo{Name:"Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
+	{"EmptyPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: []string{}}, 400},
+	{"NilPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: nil}, 400},
+	{"EmptyName", models.GameInfo{Name: "", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 400},
+}
+func TestCreateGameReturns(t *testing.T) {
+	for _, tt := range createGameStatusTests {
+		t.Run(tt.name, func(t *testing.T) {
+			rr, err := createGame(tt.body)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if code := rr.Code; code != tt.status {
+				t.Errorf("create returned wrong status code: actual %v expected %v", code, tt.status)
+			}
+		})
 	}
 }

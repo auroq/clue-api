@@ -25,30 +25,37 @@ func (controller Controller) Endpoints(router *mux.Router) {
 	router.HandleFunc("/games", controller.CreateGame).Methods("POST", "OPTIONS")
 }
 
+func respond(w http.ResponseWriter, statusCode int, response interface{}) {
+	w.WriteHeader(statusCode)
+	_ = json.NewEncoder(w).Encode(response)
+}
+
 func (controller Controller) CreateGame(w http.ResponseWriter, r *http.Request) {
 	var gameInfo models.GameInfo
 	err := json.NewDecoder(r.Body).Decode(&gameInfo)
 	var players []models.Player
 
+	if len(gameInfo.PlayerNames) <= 0 || len(gameInfo.Name) <= 0 {
+		respond(w, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
 	for _, playerName := range gameInfo.PlayerNames {
-		player, err := controller.playerService.AddPlayer(playerName, true)
+		p, err := controller.playerService.AddPlayer(playerName, true)
 		if err != nil {
-			w.WriteHeader(500)
-			_ = json.NewEncoder(w).Encode(err)
+			respond(w, http.StatusInternalServerError, err)
 			return
 		}
-		players = append(players, player)
+		players = append(players, p)
 	}
 
 	game, err := controller.gameService.CreateGame(gameInfo.Name, players)
 	if err != nil {
-		w.WriteHeader(400)
-		_ = json.NewEncoder(w).Encode("Invalid request")
+		respond(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.WriteHeader(201)
-	_ = json.NewEncoder(w).Encode(game)
+	respond(w, http.StatusCreated, game)
 }
 
 func (controller Controller) GetAllGames(w http.ResponseWriter, r *http.Request) {
