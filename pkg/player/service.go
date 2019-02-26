@@ -16,10 +16,11 @@ func NewPlayerService(dataStore data.DataStore) Service {
 }
 
 func (service Service) AddPlayer(name string, human bool) (player models.Player, err error) {
-	player = models.Player {
-		Name: name,
-		Human: human,
-		DateCreated: time.Now(),
+	player = models.Player{
+		ID:           primitive.NewObjectID(),
+		Name:         name,
+		Human:        human,
+		DateCreated:  time.Now(),
 		DateModified: time.Now(),
 	}
 	player.ID, err = service.client.Insert("clue-api", "players", player)

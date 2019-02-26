@@ -27,7 +27,7 @@ func BuildContainer() *dig.Container {
 func main() {
 	container := BuildContainer()
 
-	err := container.Invoke(func(gameController game.Controller){
+	err := container.Invoke(func(gameController game.Controller) {
 		router := mux.NewRouter()
 		gameController.Endpoints(router)
 		fmt.Println("Starting on port 8000")
@@ -37,4 +37,3 @@ func main() {
 		log.Fatal(err)
 	}
 }
-

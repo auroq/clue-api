@@ -15,7 +15,7 @@ type Controller struct {
 
 func NewGameController(gameService Service, playerService player.Service) Controller {
 	return Controller{
-		gameService: gameService,
+		gameService:   gameService,
 		playerService: playerService,
 	}
 }
@@ -40,10 +40,10 @@ func (controller Controller) CreateGame(w http.ResponseWriter, r *http.Request) 
 	}
 
 	players, err := controller.playerService.AddPlayers(gameInfo.PlayerNames...)
-		if err != nil {
-			respond(w, http.StatusInternalServerError, err)
-			return
-		}
+	if err != nil {
+		respond(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	game, err := controller.gameService.CreateGame(gameInfo.Name, players)
 	if err != nil {

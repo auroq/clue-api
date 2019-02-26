@@ -6,8 +6,8 @@ import (
 )
 
 type Config struct {
-	MdbUrl string
-	MdbUser string
+	MdbUrl      string
+	MdbUser     string
 	MdbPassword string
 }
 
@@ -17,8 +17,8 @@ func NewConfiguration() *Config {
 	mdbPass := os.Getenv("CLUE_MDB_PASSWORD")
 	mdbPass = url.QueryEscape(mdbPass)
 	return &Config{
-		MdbUrl: mdbUrl,
-		MdbUser: mdbUser,
+		MdbUrl:      mdbUrl,
+		MdbUser:     mdbUser,
 		MdbPassword: mdbPass,
 	}
 }

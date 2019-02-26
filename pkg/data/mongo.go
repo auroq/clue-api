@@ -19,7 +19,7 @@ type MongoDataStore struct {
 	*mongo.Client
 }
 
-func NewDbConnection(config *Config) (MongoDataStore, error){
+func NewDbConnection(config *Config) (MongoDataStore, error) {
 	mdbFullUrl := fmt.Sprintf("mongodb+srv://%s:%s@%s", config.MdbUser, config.MdbPassword, config.MdbUrl)
 	client, err := mongo.Connect(context.TODO(), mdbFullUrl)
 	if err == nil {

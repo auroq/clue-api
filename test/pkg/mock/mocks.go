@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/openpgp/errors"
 )
 
-type MockMongoDataStore struct { }
+type MockMongoDataStore struct{}
 
 func (client MockMongoDataStore) Insert(db string, collectionName string, obj interface{}) (id primitive.ObjectID, err error) {
 	return primitive.NewObjectID(), nil
@@ -18,7 +18,7 @@ func (client MockMongoDataStore) Find(db string, collectionName string, filter i
 }
 
 func (client MockMongoDataStore) InsertMany(db string, collectionName string, obj ...interface{}) (ids []primitive.ObjectID, err error) {
-	for range obj{
+	for range obj {
 		ids = append(ids, primitive.NewObjectID())
 	}
 	return ids, nil

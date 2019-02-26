@@ -38,15 +38,16 @@ func createGame(body interface{}) (*httptest.ResponseRecorder, error) {
 }
 
 var createGameStatusTests = []struct {
-	name string
-	body interface{}
+	name   string
+	body   interface{}
 	status int
 }{
-	{"Created", models.GameInfo{Name:"Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
-	{"EmptyPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: []string{}}, 400},
-	{"NilPlayerNames", models.GameInfo{Name:"Game1", PlayerNames: nil}, 400},
+	{"Created", models.GameInfo{Name: "Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
+	{"EmptyPlayerNames", models.GameInfo{Name: "Game1", PlayerNames: []string{}}, 400},
+	{"NilPlayerNames", models.GameInfo{Name: "Game1", PlayerNames: nil}, 400},
 	{"EmptyName", models.GameInfo{Name: "", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 400},
 }
+
 func TestCreateGameReturns(t *testing.T) {
 	for _, tt := range createGameStatusTests {
 		t.Run(tt.name, func(t *testing.T) {
