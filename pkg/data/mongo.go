@@ -9,6 +9,11 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 )
 
+type DataStore interface {
+	Insert(db string, collectionName string, obj interface{}) (id primitive.ObjectID, err error)
+	Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error)
+}
+
 type MongoDataStore struct {
 	*mongo.Client
 }

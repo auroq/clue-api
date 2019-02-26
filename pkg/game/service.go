@@ -5,13 +5,14 @@ import (
 	"github.com/auroq/clue-api/pkg/data"
 	"github.com/auroq/clue-api/pkg/models"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"time"
 )
 
 type Service struct {
-	*data.MongoDataStore
+	client data.DataStore
 }
 
-func NewGameService(dataStore *data.MongoDataStore) Service {
+func NewGameService(dataStore data.DataStore) Service {
 	return Service{dataStore}
 }
 
@@ -21,12 +22,14 @@ func (service Service) CreateGame(name string, players []models.Player) (game mo
 		game.Players = append(game.Players, player.ID)
 	}
 
-	game.ID, err = service.Insert("clue-api", "games", game)
+	game.DateCreated = time.Now()
+	game.DateModified = time.Now()
+	game.ID, err = service.client.Insert("clue-api", "games", game)
 	return game, err
 }
 
 func (service Service) GetAllGames() (games []*models.Game, err error) {
-	cur, err := service.Find("clue-api", "games", bson.D{})
+	cur, err := service.client.Find("clue-api", "games", bson.D{})
 	if err != nil {
 		return nil, err
 	}
