@@ -12,7 +12,7 @@ import (
 type DataStore interface {
 	Insert(db string, collectionName string, obj interface{}) (id primitive.ObjectID, err error)
 	InsertMany(db string, collectionName string, obj ...interface{}) (ids []primitive.ObjectID, err error)
-	Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error)
+	Find(db string, collectionName string, filter interface{}, opts ...*options.FindOptions) ([]interface{}, error)
 }
 
 type MongoDataStore struct {
@@ -48,10 +48,20 @@ func (client MongoDataStore) InsertMany(db string, collectionName string, obj ..
 	return
 }
 
-func (client MongoDataStore) Find(db string, collectionName string, filter interface{}, opts ...options.FindOptions) (*mongo.Cursor, error) {
-	findOptions := options.Find()
-	findOptions.SetLimit(2)
-
+func (client MongoDataStore) Find(db string, collectionName string, filter interface{}, opts ...*options.FindOptions) (results []interface{}, err error) {
 	collection := client.Database(db).Collection(collectionName)
-	return collection.Find(context.TODO(), filter, findOptions)
+	response, err := collection.Find(context.TODO(), filter, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	for response.Next(context.TODO()) {
+		var result interface{}
+		err = response.Decode(&result)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, &result)
+	}
+	return
 }

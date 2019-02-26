@@ -3,7 +3,6 @@ package game
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/auroq/clue-api/pkg/data"
 	"github.com/auroq/clue-api/pkg/game"
 	"github.com/auroq/clue-api/pkg/models"
 	"github.com/auroq/clue-api/pkg/player"
@@ -13,7 +12,7 @@ import (
 	"testing"
 )
 
-var dataStore data.DataStore
+var dataStore mock.MockMongoDataStore
 var gameService game.Service
 var playerService player.Service
 var gameController game.Controller
@@ -42,10 +41,26 @@ var createGameStatusTests = []struct {
 	body   interface{}
 	status int
 }{
-	{"Created", models.GameInfo{Name: "Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 201},
-	{"EmptyPlayerNames", models.GameInfo{Name: "Game1", PlayerNames: []string{}}, 400},
-	{"NilPlayerNames", models.GameInfo{Name: "Game1", PlayerNames: nil}, 400},
-	{"EmptyName", models.GameInfo{Name: "", PlayerNames: []string{"Player1", "Player2", "Player3"}}, 400},
+	{
+		"Created",
+		models.GameInfo{Name: "Game1", PlayerNames: []string{"Player1", "Player2", "Player3"}},
+		http.StatusCreated,
+	},
+	{
+		"EmptyPlayerNames",
+		models.GameInfo{Name: "Game1", PlayerNames: []string{}},
+		http.StatusBadRequest,
+	},
+	{
+		"NilPlayerNames",
+		models.GameInfo{Name: "Game1", PlayerNames: nil},
+		http.StatusBadRequest,
+	},
+	{
+		"EmptyName",
+		models.GameInfo{Name: "", PlayerNames: []string{"Player1", "Player2", "Player3"}},
+		http.StatusBadRequest,
+	},
 }
 
 func TestCreateGameReturns(t *testing.T) {
@@ -78,12 +93,17 @@ var getAllGamesStatusTests = []struct {
 	games  []models.Game
 	status int
 }{
-	{"EmptyList", []models.Game{}, 201},
+	{"EmptyList", []models.Game{}, http.StatusOK},
 }
 
 func TestGetAllGamesReturns(t *testing.T) {
 	for _, tt := range getAllGamesStatusTests {
 		t.Run(tt.name, func(t *testing.T) {
+			var genericGames []interface{}
+			for _, game := range tt.games {
+				genericGames = append(genericGames, game)
+			}
+			dataStore.FindValue = genericGames
 			rr, err := getAllGames()
 			if err != nil {
 				t.Fatal(err)
